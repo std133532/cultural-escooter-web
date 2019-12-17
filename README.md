@@ -14,4 +14,3 @@ New Cultural Escooter!
 
 ## License
 See [LICENSE](LICENSE)
-test
