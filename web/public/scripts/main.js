@@ -16,18 +16,23 @@
 'use strict';
 
 // Signs-in Friendly Chat.
-function signIn() {
+/*function signIn() {
   // Sign in Firebase using popup auth and Google as the identity provider.
   var provider = new firebase.auth.GoogleAuthProvider();
   firebase.auth().signInWithPopup(provider);
 }
-
+*/
 // Signs-out of Friendly Chat.
 function signOut() {
   // Sign out of Firebase.
+  alert("signOut");
   firebase.auth().signOut();
 }
+function signOutUserMenu(){
+  alert("signOut");
+  firebase.auth().signOut();
 
+}
 // Initiate firebase auth.
 function initFirebaseAuth() {
   // Listen to auth state changes.
@@ -176,31 +181,42 @@ function onMessageFormSubmit(e) {
 function authStateObserver(user) {
   if (user) { // User is signed in!
     // Get the signed-in user's profile pic and name.
+    console.log("user:"+user);
     var profilePicUrl = getProfilePicUrl();
     var userName = getUserName();
 
-    // Set the user's profile pic and name.
-    userPicElement.style.backgroundImage = 'url(' + addSizeToGoogleProfilePic(profilePicUrl) + ')';
-    userNameElement.textContent = userName;
+      // Set the user's profile pic and name.
+$(".demo-drawer-header").find("img").attr("src", profilePicUrl);
+
+ $("#auth-name").text(userName);
+ if(userName == null)
+      $("#auth-name").text(firebase.auth().currentUser.email);
+
+    $(".demo-drawer-header").css('visibility', 'visible');
+  /*  userPicElement.style.backgroundImage = 'url(' + addSizeToGoogleProfilePic(profilePicUrl) + ')';
+    userNameElement.textContent = userName;*/
 
     // Show user's profile and sign-out button.
-    userNameElement.removeAttribute('hidden');
+   /* userNameElement.removeAttribute('hidden');
     userPicElement.removeAttribute('hidden');
-    signOutButtonElement.removeAttribute('hidden');
+    signOutButtonElement.removeAttribute('hidden'); */
 
     // Hide sign-in button.
-    signInButtonElement.setAttribute('hidden', 'true');
+    //signInButtonElement.setAttribute('hidden', 'true');
 
     // We save the Firebase Messaging Device token and enable notifications.
-    saveMessagingDeviceToken();
+   // saveMessagingDeviceToken();
+   // $("#includedContent").empty();
   } else { // User is signed out!
-    // Hide user's profile and sign-out button.
-    userNameElement.setAttribute('hidden', 'true');
-    userPicElement.setAttribute('hidden', 'true');
-    signOutButtonElement.setAttribute('hidden', 'true');
 
+    $(".demo-drawer-header").css('visibility', 'hidden');
+    // Hide user's profile and sign-out button.
+   /* userNameElement.setAttribute('hidden', 'true');
+    userPicElement.setAttribute('hidden', 'true');
+    signOutButtonElement.setAttribute('hidden', 'true'); */
+  
     // Show sign-in button.
-    signInButtonElement.removeAttribute('hidden');
+  //  signInButtonElement.removeAttribute('hidden');
   }
 }
 
@@ -346,9 +362,21 @@ function checkSetup() {
 
 // Checks that Firebase has been imported.
 checkSetup();
-
 // Shortcuts to DOM Elements.
-var messageListElement = document.getElementById('messages');
+
+if ($('#sign-out').length > 0) { 
+var signOutButtonElement = document.getElementById('sign-out');
+signOutButtonElement.addEventListener('click', signOut);
+
+}
+if ($('#sign-out-user-menu').length > 0) { 
+
+var signOutUserButtonElement = document.getElementById('sign-out-user-menu');
+//var signOutUserButtonElement = $('.mdl-menu mdl-menu--bottom-right li:nth-child(2) a');
+signOutUserButtonElement.addEventListener('click', signOutUserMenu);
+
+}
+/*var messageListElement = document.getElementById('messages');
 var messageFormElement = document.getElementById('message-form');
 var messageInputElement = document.getElementById('message');
 var submitButtonElement = document.getElementById('submit');
@@ -359,11 +387,13 @@ var userPicElement = document.getElementById('user-pic');
 var userNameElement = document.getElementById('user-name');
 var signInButtonElement = document.getElementById('sign-in');
 var signOutButtonElement = document.getElementById('sign-out');
-var signInSnackbarElement = document.getElementById('must-signin-snackbar');
+var signInSnackbarElement = document.getElementById('must-signin-snackbar'); */
+//var signInButtonElement = document.getElementById('sign-in');
 
+
+//signInButtonElement.addEventListener('click', signIn);
 // Saves message on form submit.
-messageFormElement.addEventListener('submit', onMessageFormSubmit);
-signOutButtonElement.addEventListener('click', signOut);
+/*messageFormElement.addEventListener('submit', onMessageFormSubmit);
 signInButtonElement.addEventListener('click', signIn);
 
 // Toggle for the button.
@@ -375,7 +405,7 @@ imageButtonElement.addEventListener('click', function(e) {
   e.preventDefault();
   mediaCaptureElement.click();
 });
-mediaCaptureElement.addEventListener('change', onMediaFileSelected);
+mediaCaptureElement.addEventListener('change', onMediaFileSelected); */
 
 // initialize Firebase
 initFirebaseAuth();
@@ -383,8 +413,164 @@ initFirebaseAuth();
 // Remove the warning about timstamps change. 
 var firestore = firebase.firestore();
 
+loadUsers();
+
+loadEscooters();
  // TODO: Enable Firebase Performance Monitoring.
-firebase.performance();
+//firebase.performance();
 
 // We load currently existing chat messages and listen to new ones.
-loadMessages();
+//loadMessages();
+
+/*function userList(){
+    $("#includedContent").empty();
+    $("#includedContent").load("../pages/users.html"); 
+    
+
+}*/
+
+function loadUsers() {
+  // Create the query to load the last 12 messages and listen for new ones.
+  var query = firebase.firestore().collection('app-users').orderBy('lastLoggedDate', 'desc').limit(12);
+  
+  // Start listening to the query.
+  query.onSnapshot(function(snapshot) {
+    snapshot.docChanges().forEach(function(change) {
+      if (change.type === 'removed') {
+        //deleteMessage(change.doc.id);
+      } else {
+        var app_user = change.doc.data();
+        displayUser(change.doc.id, app_user.lastLoggedDate, app_user.name,
+                      app_user.email, app_user.status, app_user.img);
+      }
+    });
+  });
+}
+function loadEscooters(){
+
+   var query = firebase.firestore().collection('escooters');
+  
+  // Start listening to the query.
+  query.onSnapshot(function(snapshot) {
+    snapshot.docChanges().forEach(function(change) {
+      if (change.type === 'removed') {
+        //deleteMessage(change.doc.id);
+      } else {
+        var escooter = change.doc.data();
+        displayEscooter(change.doc.id, escooter.battery, escooter.status,
+                      escooter.name, escooter.kms, escooter.code);
+      }
+    });
+  });
+
+}
+
+
+function displayUser(id, lastLoggedDate, name, email, status, img) {
+//$("#users").append("<li class=\"mdl-list__item\"><span class=\"mdl-list__item-primary-content\"><img class=\"img-user\" height=\"42\" width=\"42\"  src=\""+img+"\">"+name+"</span></li>");
+var span_image = document.createElement("span");
+span_image.classList.add("mdl-list__item-secondary-content");
+
+var user_img = document.createElement("img");
+user_img.width = "42";
+user_img.height = "42";
+user_img.src = img;
+span_image.append(user_img);
+
+var li= document.createElement("li");
+li.classList.add("mdl-list__item");
+
+var span_name = document.createElement("span");
+span_name.classList.add("mdl-list__item-secondary-content");
+span_name.innerText  = name ;
+
+var span_email= document.createElement("span");
+span_email.classList.add("mdl-list__item-secondary-content");
+span_email.innerText  = email ;
+
+var span_status= document.createElement("span");
+span_status.classList.add("mdl-list__item-secondary-content");
+span_status.innerText  = status ;
+
+var span_lastLoggedDate= document.createElement("span");
+span_lastLoggedDate.classList.add("mdl-list__item-secondary-content");
+
+
+span_lastLoggedDate.innerText  = convert(lastLoggedDate.seconds);
+
+li.append(span_image);
+li.append(span_name);
+li.append(span_email);
+li.append(span_status);
+li.append(span_lastLoggedDate);
+
+
+$("#users-list").append(li);
+
+}
+
+function displayEscooter(id, battery, status, name, kms, code) {
+
+var tr = document.createElement("tr");
+var td_battery= document.createElement("td");
+td_battery.classList.add("mdl-data-table__cell--non-numeric");
+td_battery.innerText  = battery ;
+tr.append(td_battery);
+
+var td_status= document.createElement("td");
+td_status.innerText  = status ;
+tr.append(td_status);
+
+var td_code= document.createElement("td");
+td_code.innerText  = code ;
+tr.append(td_code);
+
+var td_name= document.createElement("td");
+td_name.innerText  = name;
+tr.append(td_name);
+
+var td_kms= document.createElement("td");
+td_kms.innerText  = kms;
+tr.append(td_kms);
+
+ $("#eScooter").append(tr);
+ componentHandler.upgradeDom('MaterialCheckbox');
+       
+}
+
+function convert(timestp){
+
+ // Unixtimestamp
+ var unixtimestamp = timestp;
+
+ // Months array
+ var months_arr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+ // Convert timestamp to milliseconds
+ var date = new Date(unixtimestamp*1000);
+
+ // Year
+ var year = date.getFullYear();
+
+ // Month
+ var month = months_arr[date.getMonth()];
+
+ // Day
+ var day = date.getDate();
+
+ // Hours
+ var hours = date.getHours();
+
+ // Minutes
+ var minutes = "0" + date.getMinutes();
+
+ // Seconds
+ var seconds = "0" + date.getSeconds();
+
+ // Display date time in MM-dd-yyyy h:m:s format
+ var convdataTime = month+'-'+day+'-'+year+' '+hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+ 
+return  convdataTime;
+ 
+}
+
