@@ -30,7 +30,15 @@ function signInWithEmail() {
   var errorCode = error.code;
   var errorMessage = error.message;
 
-  alert(errorMessage);
+ // alert(errorMessage);
+  var snackbarContainer = document.querySelector('#demo-snackbar-example');
+
+
+    var data = {
+      message: errorMessage,
+      timeout: 5000,
+    };
+    snackbarContainer.MaterialSnackbar.showSnackbar(data);
 });
 
   
@@ -52,7 +60,16 @@ function registerUser() {
 	var errorCode = error.code;
   	var errorMessage = error.message;
 
-  alert(errorMessage);
+  //alert(errorMessage);
+
+   var snackbarContainer = document.querySelector('#demo-snackbar-example');
+
+
+    var data = {
+      message: errorMessage,
+      timeout: 5000,
+    };
+    snackbarContainer.MaterialSnackbar.showSnackbar(data);
 	});
 
 }
