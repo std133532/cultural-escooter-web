@@ -45,6 +45,32 @@ limitations under the License
     <link rel="stylesheet" href="styles/main-page.css">
     <!-- TODO: Enable First Input Delay polyfill library. -->
     <script type="text/javascript">!function(n,e){var t,o,i,c=[],f={passive:!0,capture:!0},r=new Date,a="pointerup",u="pointercancel";function p(n,c){t||(t=c,o=n,i=new Date,w(e),s())}function s(){o>=0&&o<i-r&&(c.forEach(function(n){n(o,t)}),c=[])}function l(t){if(t.cancelable){var o=(t.timeStamp>1e12?new Date:performance.now())-t.timeStamp;"pointerdown"==t.type?function(t,o){function i(){p(t,o),r()}function c(){r()}function r(){e(a,i,f),e(u,c,f)}n(a,i,f),n(u,c,f)}(o,t):p(o,t)}}function w(n){["click","mousedown","keydown","touchstart","pointerdown"].forEach(function(e){n(e,l,f)})}w(n),self.perfMetrics=self.perfMetrics||{},self.perfMetrics.onFirstInputDelay=function(n){c.push(n),s()}}(addEventListener,removeEventListener);</script>
+
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-analytics.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyDTocav3zl-s7-si_pwwiN70hKC65meGT4",
+    authDomain: "cultural-escooter.firebaseapp.com",
+    databaseURL: "https://cultural-escooter.firebaseio.com",
+    projectId: "cultural-escooter",
+    storageBucket: "cultural-escooter.appspot.com",
+    messagingSenderId: "236964210695",
+    appId: "1:236964210695:web:2d1087f14e29d3240a62a2",
+    measurementId: "G-WEHC1F1ZLY"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
+
   </head>
   <body>
     <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
@@ -94,12 +120,12 @@ limitations under the License
           </div> 
         </header>
         <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
-          <a class="mdl-navigation__link" href="/index.html"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">home</i>Αρχική</a>
+          <a class="mdl-navigation__link"  href="/index.html"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">home</i>Αρχική</a>
           <a class="mdl-navigation__link" href="/pages/login.html"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">input</i>Σύνδεση</a>
-          <a class="mdl-navigation__link" href="/pages/users.html"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">people</i>Χρήστες</a>
-          <a class="mdl-navigation__link" href="/pages/escooters.html"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">near_me</i>Πατίνια</a>
+          <a class="mdl-navigation__link" id="user_menu_btn" href="/pages/users.html"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">people</i>Χρήστες</a>
+          <a class="mdl-navigation__link"  id="escooter_menu_btn" href="/pages/escooters.html"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">near_me</i>Πατίνια</a>
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">my_location</i>Αξιοθέτα</a>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">shopping_cart</i>Πληρωμές</a>
+          <a class="mdl-navigation__link"  id="payment_menu_btn" href="/pages/payments.html"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">shopping_cart</i>Πληρωμές</a>
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">loyalty</i>Πόντοι χρηστών</a>
           <div class="mdl-layout-spacer"></div>
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
@@ -108,7 +134,10 @@ limitations under the License
       <main class="mdl-layout__content mdl-color--grey-100">
         <div class="mdl-grid demo-content">
            
-
+    <div id="demo-snackbar-example" class="mdl-js-snackbar mdl-snackbar">
+  <div class="mdl-snackbar__text"></div>
+  <button class="mdl-snackbar__action" type="button"></button>
+</div>
         </div>
       </main>
     </div>

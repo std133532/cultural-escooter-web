@@ -220,6 +220,7 @@ $(".demo-drawer-header").find("img").attr("src", profilePicUrl);
   }
 }
 
+
 // Returns true if user is signed-in. Otherwise false and displays a message.
 function checkSignedInWithMessage() {
   // Return true if the user is signed in Firebase
@@ -412,10 +413,16 @@ initFirebaseAuth();
 
 // Remove the warning about timstamps change. 
 var firestore = firebase.firestore();
-
+if ($('#users').length > 0) { 
 loadUsers();
+}
 
-loadEscooters();
+if ($('#eScootertable').length > 0 ) { 
+  
+       loadEscooters();
+     
+   
+}
  // TODO: Enable Firebase Performance Monitoring.
 //firebase.performance();
 
@@ -428,8 +435,46 @@ loadEscooters();
     
 
 }*/
+if ($('#payments').length > 0) { 
 
+  loadPayments();
+
+
+
+}
+function loadPayments() {
+  
+firebase.firestore().collection("payments")
+    .get()
+    .then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+            // doc.data() is never undefined for query doc snapshots
+            console.log(doc.id, " => ", doc.data());
+
+               var payment= doc.data();
+              var t = $('#payments').DataTable();
+                t.row.add( [
+                         payment.payment_id,
+                            payment.amount,
+                            payment.maskedpan,
+                     convert(payment.payment_date.seconds)
+                  ] ).draw( false ); 
+
+                });
+    })
+    .catch(function(error) {
+        console.log("Error getting documents: ", error);
+    });
+
+
+}
+    
+
+ 
+
+     
 function loadUsers() {
+
   // Create the query to load the last 12 messages and listen for new ones.
   var query = firebase.firestore().collection('app-users').orderBy('lastLoggedDate', 'desc').limit(12);
   
@@ -439,9 +484,21 @@ function loadUsers() {
       if (change.type === 'removed') {
         //deleteMessage(change.doc.id);
       } else {
+       
         var app_user = change.doc.data();
-        displayUser(change.doc.id, app_user.lastLoggedDate, app_user.name,
-                      app_user.email, app_user.status, app_user.img);
+      //  displayUser(change.doc.id, app_user.lastLoggedDate, app_user.name,
+                   //   app_user.email, app_user.status, app_user.img);
+              var t = $('#users').DataTable();
+                t.row.add( [
+                
+                         function (data) {
+                           return '<img  height = "42" .width = "42" src="' +app_user.img+ '" />';
+                       },
+                        app_user.name,
+                        app_user.email, 
+                        app_user.status, 
+                       convert( app_user.lastLoggedDate.seconds), 
+                  ] ).draw( false ); 
       }
     });
   });
@@ -573,4 +630,51 @@ function convert(timestp){
 return  convdataTime;
  
 }
+
+$( "#user_menu_btn" ).click(function( event ) {
+var signInSnackbarElement = document.getElementById('demo-snackbar-example');
+
+      if(!isUserSignedIn()){
+         event.preventDefault();
+      
+          var data = {
+    message: 'Πρέπει να συνδεθείτε πρώτα για να έχετε πρόσβαση στους Χρήστες',
+    timeout: 5000
+  };
+  signInSnackbarElement.MaterialSnackbar.showSnackbar(data);
+ 
+     
+    }
+});
+$( "#escooter_menu_btn" ).click(function( event ) {
+var signInSnackbarElement = document.getElementById('demo-snackbar-example');
+      if(!isUserSignedIn()){
+         event.preventDefault();
+      
+          var data = {
+    message: 'Πρέπει να συνδεθείτε πρώτα για να έχετε πρόσβαση στα Πατίνια',
+    timeout: 5000
+  };
+  signInSnackbarElement.MaterialSnackbar.showSnackbar(data);
+ 
+     
+    }
+});
+
+$( "#payment_menu_btn" ).click(function( event ) {
+var signInSnackbarElement = document.getElementById('demo-snackbar-example');
+      if(!isUserSignedIn()){
+         event.preventDefault();
+      
+          var data = {
+    message: 'Πρέπει να συνδεθείτε πρώτα για να έχετε πρόσβαση στις Πληρωμές',
+    timeout: 5000
+  };
+  signInSnackbarElement.MaterialSnackbar.showSnackbar(data);
+ 
+     
+    }
+});
+
+
 
