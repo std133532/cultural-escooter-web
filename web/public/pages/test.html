@@ -1,0 +1,59 @@
+<head>
+  <title>Checkout</title>
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+<div id="card-element">
+  <!-- Elements will create input elements here -->
+</div>
+
+<!-- We'll put the error messages in this element -->
+<div id="card-errors" role="alert"></div>
+
+<button id="submit">Pay</button>
+  </body>
+
+<script>
+// Set your publishable key: remember to change this to your live publishable key in production
+// See your keys here: https://dashboard.stripe.com/account/apikeys
+var stripe = Stripe('pk_test_fCQle5ELk7Wpl9X0EQVOv5ZT0097Mdf9py');
+var elements = stripe.elements();
+var submitButton = document.getElementById('submit');
+
+submitButton.addEventListener('click', function(ev) {
+ var  clientSecret='sk_test_E5VxWy3lfrr7Xes0GmFKgTi800QlEOCYjh';
+  stripe.confirmCardPayment(clientSecret, {
+    payment_method: {
+      card: card,
+      billing_details: {
+        name: 'Jenny Rosen'
+      }
+    }
+  }).then(function(result) {
+    if (result.error) {
+      // Show error to your customer (e.g., insufficient funds)
+      console.log(result.error.message);
+    } else {
+      // The payment has been processed!
+      if (result.paymentIntent.status === 'succeeded') {
+        // Show a success message to your customer
+        // There's a risk of the customer closing the window before callback
+        // execution. Set up a webhook or plugin to listen for the
+        // payment_intent.succeeded event that handles any business critical
+        // post-payment actions.
+      }
+    }
+  });
+});
+var style = {
+  base: {
+    color: "#32325d",
+  }
+};
+
+var card = elements.create("card", { style: style });
+card.mount("#card-element");
+
+</script>
+
+
